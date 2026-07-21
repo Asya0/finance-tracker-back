@@ -1,0 +1,45 @@
+{
+  "name": "finance-tracker-back",
+  "version": "0.0.1",
+  "description": "Finance tracker backend",
+  "private": true,
+  "scripts": {
+    "env": "node scripts/ensure-env.js",
+    "build": "nest build",
+    "prestart": "npm run env",
+    "start": "nest start",
+    "prestart:dev": "npm run env",
+    "start:dev": "nest start --watch",
+    "prestart:prod": "npm run env",
+    "start:prod": "node dist/main"
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.4.4",
+    "@nestjs/config": "^3.2.3",
+    "@nestjs/core": "^10.4.4",
+    "@nestjs/jwt": "^10.2.0",
+    "@nestjs/platform-express": "^10.4.4",
+    "@nestjs/swagger": "^8.1.1",
+    "@nestjs/typeorm": "^10.0.2",
+    "@types/sql.js": "^1.4.11",
+    "bcrypt": "^5.1.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "cookie-parser": "^1.4.7",
+    "pg": "^8.13.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "sql.js": "^1.14.1",
+    "typeorm": "^0.3.20"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.4.5",
+    "@types/bcrypt": "^5.0.2",
+    "@types/cookie-parser": "^1.4.7",
+    "@types/express": "^5.0.0",
+    "@types/node": "^20.16.10",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.6.2"
+  }
+}
