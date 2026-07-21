@@ -29,11 +29,9 @@ export class JwtAuthGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: accessSecret(),
       });
-      // Кладём пользователя в request, чтобы достать его в контроллере
       request.user = { id: payload.sub, email: payload.email };
       return true;
     } catch {
-      // Фронтенд по 401 должен дёрнуть /auth/refresh и повторить запрос
       throw new UnauthorizedException('Access-токен истёк');
     }
   }

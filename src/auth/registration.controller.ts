@@ -30,7 +30,6 @@ export class RegistrationController {
   @ApiResponse({ status: 409, description: 'Email уже занят' })
   async register(
     @Body() dto: RegisterDto,
-    // passthrough: true — Nest сам отправит возвращённый объект как JSON
     @Res({ passthrough: true }) res: Response,
   ) {
     const { tokens, user } = await this.authService.register(dto);

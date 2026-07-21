@@ -70,11 +70,6 @@ export class AuthService {
     return this.issueTokens(user);
   }
 
-  /**
-   * Обновление пары токенов по refresh-токену из куки.
-   * Проверяем не только подпись, но и совпадение с хешем в БД —
-   * это позволяет отзывать сессии и ловит переиспользование старого токена.
-   */
   async refresh(refreshToken: string | undefined): Promise<AuthResult> {
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh-токен отсутствует');
@@ -97,8 +92,6 @@ export class AuthService {
     }
 
     if (!this.refreshTokenMatches(refreshToken, user.refreshTokenHash)) {
-      // Токен подписан верно, но в БД лежит другой — вероятно,
-      // используется старый токен. Обрываем сессию целиком.
       user.refreshTokenHash = null;
       await this.usersRepository.save(user);
       throw new UnauthorizedException('Сессия истекла, войдите заново');
@@ -107,10 +100,6 @@ export class AuthService {
     return this.issueTokens(user);
   }
 
-  /**
-   * Разлогин по refresh-токену, а не по access-токену: access может уже
-   * протухнуть, но выйти из аккаунта пользователь должен в любом случае.
-   */
   async logout(refreshToken: string | undefined): Promise<void> {
     if (!refreshToken) {
       return;
@@ -125,7 +114,6 @@ export class AuthService {
         { refreshTokenHash: null },
       );
     } catch {
-      // Токен невалиден — сессии в БД всё равно нет, просто чистим куки
     }
   }
 
@@ -137,13 +125,9 @@ export class AuthService {
     return { id: user.id, email: user.email };
   }
 
-  /** Генерирует новую пару токенов и сохраняет хеш refresh-токена в БД. */
   private async issueTokens(user: User): Promise<AuthResult> {
     const payload = { sub: user.id, email: user.email };
 
-    // jti — уникальный id токена. Без него два токена, выпущенные в одну
-    // секунду, совпадут побайтово (payload и iat одинаковы), и ротация
-    // refresh-токена перестанет работать.
     const accessToken = await this.jwtService.signAsync(
       { ...payload, jti: randomUUID() },
       { secret: accessSecret(), expiresIn: ACCESS_TOKEN_TTL },
@@ -163,17 +147,10 @@ export class AuthService {
     };
   }
 
-  /**
-   * Для refresh-токена используем SHA-256, а не bcrypt. Причины:
-   * 1) bcrypt обрезает вход до 72 байт, а JWT длиннее — два разных токена
-   *    с одинаковым началом дали бы одинаковый хеш, и ротация сломалась бы;
-   * 2) bcrypt нужен для паролей с низкой энтропией, а токен и так случаен.
-   */
   private hashRefreshToken(token: string): string {
     return createHash('sha256').update(token).digest('hex');
   }
 
-  /** Сравнение за постоянное время — защита от timing-атак. */
   private refreshTokenMatches(token: string, storedHash: string): boolean {
     const tokenHash = Buffer.from(this.hashRefreshToken(token), 'hex');
     const expected = Buffer.from(storedHash, 'hex');

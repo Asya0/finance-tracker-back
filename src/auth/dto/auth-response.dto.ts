@@ -8,10 +8,6 @@ export class UserDto {
   email: string;
 }
 
-/**
- * Токены в теле ответа намеренно не возвращаются — они уходят
- * в httpOnly-куках, недоступных из JavaScript.
- */
 export class AuthResponseDto {
   @ApiProperty({ type: UserDto })
   user: UserDto;

@@ -29,7 +29,6 @@ import { AuthResponseDto, UserDto } from './dto/auth-response.dto';
 export class SessionController {
   constructor(private readonly authService: AuthService) {}
 
-  /** Выдаёт новую пару токенов по refresh-куке и ротирует её. */
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @ApiCookieAuth('refreshToken')
@@ -69,7 +68,6 @@ export class SessionController {
     return { success: true };
   }
 
-  /** Текущий пользователь — фронт дёргает его для восстановления сессии. */
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('accessToken')

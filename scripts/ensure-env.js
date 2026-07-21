@@ -1,10 +1,3 @@
-/**
- * Создаёт .env из .env.example, если .env ещё нет.
- * Запускается автоматически перед стартом проекта (npm-хуки prestart*).
- *
- * Существующий .env никогда не перезаписывается — там могут быть
- * реальные секреты и строка подключения к базе.
- */
 const { copyFileSync, existsSync } = require('node:fs');
 const { join } = require('node:path');
 
